@@ -8,7 +8,7 @@ How Run:
 4.  pip3 install dataclasses==0.6
 5.  pip3 install SQLAlchemy==2.0.29
 6.  cd sqlalchemy1to1_1toN_NtoN/1toM
-7.  python3 driver1toMany.py
+7.  python3 driver.py
 """
 
 from model import User, Address, mysqlSession
@@ -76,3 +76,7 @@ mysqlSession.commit()
 
 logger.info("updated user.name User with ID 1")
 getUserAndAddressWithId_1()  # check User if updated or not
+
+
+# close session at end [ must to flush all transaction ]
+mysqlSession.close()

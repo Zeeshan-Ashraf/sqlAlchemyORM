@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, Column, String, Integer, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, Mapped
 
 Base = declarative_base()
-MYSQL_DB_CONNECT_URI = 'mysql+pymysql://root:@127.0.0.1:3306/data_db?charset=utf8mb4'
+MYSQL_DB_CONNECT_URI = 'mysql+pymysql://root:@127.0.0.1:3306/data_db?charset=utf8mb4'  # use 'sqlite:///data.db' for local file storage
 mysqlEngine = create_engine(MYSQL_DB_CONNECT_URI, echo=True)  # echo will echo the query fired to DB
 MysqlSession = sessionmaker(bind=mysqlEngine)
 mysqlSession = MysqlSession()
@@ -34,13 +34,16 @@ class Address(Base):
 @dataclass
 class User(Base):
     __tablename__ = 'users'
-    id = Column('id', Integer, primary_key=True)
+    id = Column('id', Integer, primary_key=True)  # 'id' is optional, having auto_increament is also optional for primary_key
     name = Column('name', String(255))
-    addresses = relationship('Address', uselist=True)
+    addresses = relationship('Address', uselist=True, back_populates='user_id')
     # ^^^ also can use addresses: Mapped[list[Address]] = relationship('Address', uselist=True)
+    # back_populates=anotherTable.relatedColRelatiohsipVar tells sqlAlchemy that when User.Addresses changes it should also reflect
+    # the updates in other table
+    # details: https://stackoverflow.com/questions/39869793/when-do-i-need-to-use-sqlalchemy-back-populates
 
     def __repr__(self):
         return 'id={}, name={}, addresses[]={}'.format(self.id, self.name, self.addresses)
 
 
-Base.metadata.create_all(mysqlEngine)
+Base.metadata.create_all(mysqlEngine)  # order of table class (or import) doesn't matter
